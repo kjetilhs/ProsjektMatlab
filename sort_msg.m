@@ -210,3 +210,14 @@ legend('Pixi','Rtklib');
 title('Velocity in Down direction');
 ylabel('Velocity [m/s]')
 xlabel('Time [s]');
+
+figure(4)
+plot(timestamp_p(1:TimeEnd)-timeStart,satellites_p(1:TimeEnd));
+hold on;
+plot(timestamp_r(1:TimeEnd)-timeStart,satellites_r(1:TimeEnd),'r');
+grid on;
+title('Visable satellites')
+xlabel('Time [s]');
+ylabel('Number of satellites');
+legend('Pixi','Rtklib');
+ylim([4 12])
