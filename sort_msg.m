@@ -1,10 +1,11 @@
 %piksi 22
 %rtklib 23
-
+close all;
+clear;
 load('log_folder/neptusLog/Springeoekt1/Data.mat')
 
 len = length(RtkFix.src_ent);
-
+TimeEnd = 190;
 numberRTK = 0;
 numberPIXI = 0;
 %% Finding the number of RKT and PIXI
@@ -71,7 +72,15 @@ for i=1:len
         satellites_p(j) =  RtkFix.satellites(i);
         iar_hyp_p(j) =  RtkFix.iar_hyp(i);
         iar_ratio_p(j) =  RtkFix.iar_ratio(i);
-        type_p(j) =  RtkFix.type(i);
+        if strcmp(RtkFix.type(i,1:2),'FI')
+            type_p(k) = 3;
+        elseif strcmp(RtkFix.type(i,1:2),'FL')
+            type_p(k) = 2;
+        elseif strcmp(RtkFix.type(i),'O')
+            type_p(k) = 1;
+        else
+            type_p(k) = 0;
+        end
         j = j+1;
     else
         timestamp_r(k) = RtkFix.timestamp(i);
@@ -88,48 +97,116 @@ for i=1:len
         satellites_r(k) =  RtkFix.satellites(i);
         iar_hyp_r(k) =  RtkFix.iar_hyp(i);
         iar_ratio_r(k) =  RtkFix.iar_ratio(i);
-        type_r(k) =  RtkFix.type(i);
+        if strcmp(RtkFix.type(i,1:2),'FI')
+            type_r(k) = 3;
+        elseif strcmp(RtkFix.type(i,1:2),'FL')
+            type_r(k) = 2;
+        elseif strcmp(RtkFix.type(i), 'O')
+            type_r(k) = 1;
+        else
+            type_r(k) = 0;
+        end
         k = k+1;
         
     end
         
-        
 
 end
-
+%% Calculate velocity from position
+nd_r = zeros(1,length(n_r)-1);
+ed_r = zeros(1,length(n_r)-1);
+dd_r = zeros(1,length(n_r)-1);
+nd_p = zeros(1,length(n_p)-1);
+ed_p = zeros(1,length(n_p)-1);
+dd_p = zeros(1,length(n_p)-1);
+for i = 1:length(n_r)-1
+    nd_r(i) = (n_r(i+1)-n_r(i))/(timestamp_r(i+1)-timestamp_r(i));
+    ed_r(i) = (e_r(i+1)-e_r(i))/(timestamp_r(i+1)-timestamp_r(i));
+    dd_r(i) = (d_r(i+1)-d_r(i))/(timestamp_r(i+1)-timestamp_r(i));
+end
+for i = 1:length(n_p)-1
+    nd_p(i) = (n_p(i+1)-n_p(i))/(timestamp_p(i+1)-timestamp_p(i));
+    ed_p(i) = (e_p(i+1)-e_p(i))/(timestamp_p(i+1)-timestamp_p(i));
+    dd_p(i) = (d_p(i+1)-d_p(i))/(timestamp_p(i+1)-timestamp_p(i));
+end
+%% Plot 
 figure(1);
 plot(e_p,n_p);
+hold on;
+plot(e_r,n_r,'r');
 grid on;
-title('Piksi'); 
+title('XY'); 
 xlabel('East [m]'); ylabel('North [m]');
+legend('Pixi','RtkLib');
+
+% figure(2);
+% plot3(e_p,n_p,d_p);
+% grid on;
+% title('NED Piksi'); 
+% xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+% 
+% figure(4);
+% plot3(e_r,n_r,d_r);
+% grid on;
+% title('NED rtklib'); 
+% xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+
 
 figure(2);
-plot(e_r,n_r);
-grid on;
-title('rtklib'); 
-xlabel('East [m]'); ylabel('North [m]');
+subplot(2,1,1);
+plot(timestamp_p(1:TimeEnd)-timeStart,d_p(1:TimeEnd),'b');
+% grid on;
+% title('Down Piksi'); 
+% xlabel('Time [s]'); ylabel('Down [m]');
 
-figure(3);
-plot3(e_p,n_p,d_p);
+hold on;
+plot(timestamp_r(1:TimeEnd)-timeStart,d_r(1:TimeEnd),'r');
 grid on;
-title('NED Piksi'); 
-xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+title('Down Rtklib');
+legend('Pixi','Rtklib')
+xlabel('Time [s]');
+ylabel('Down [m]');
 
-figure(4);
-plot3(e_r,n_r,d_r);
+subplot(2,1,2)
+plot(timestamp_p(1:TimeEnd)-timeStart,type_p(1:TimeEnd),'b');
+hold on;
+plot(timestamp_r(1:TimeEnd)-timeStart,type_r(1:TimeEnd),'r');
 grid on;
-title('NED rtklib'); 
-xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+title('Abiguity solution')
+ylabel('Solution type')
+xlabel('Time [s]');
+legend('Pixi','Rtklib');
+ylim([0 5]);
 
-
-figure(5);
-plot(timestamp_p(1:190)-timeStart,d_p(1:190));
+figure(3)
+subplot(3,1,1)
+plot(timestamp_p(1:TimeEnd)-timeStart,v_n_p(1:TimeEnd));
+hold on;
 grid on;
-title('Down Piksi'); 
-xlabel('Time [s]'); ylabel('Down [m]');
+plot(timestamp_r(1:TimeEnd)-timeStart,v_n_r(1:TimeEnd),'r')
+legend('Pixi','Rtklib');
+title('Velocity in North direction');
+ylabel('Velocity [m/s]')
+xlabel('Time [s]');
 
-figure(6);
-plot(timestamp_r(1:190)-timeStart,d_r(1:190));
+subplot(3,1,2)
+plot(timestamp_p(1:TimeEnd)-timeStart,v_e_p(1:TimeEnd));
+hold on;
 grid on;
-title('Down Rtklib'); 
-xlabel('Time [s]'); ylabel('Down [m]');
+plot(timestamp_r(1:TimeEnd)-timeStart,v_e_r(1:TimeEnd),'r')
+% plot(timestamp_p(1:TimeEnd)-timeStart,ed_p(1:TimeEnd),'g');
+% plot(timestamp_r(1:TimeEnd)-timeStart,ed_r(1:TimeEnd),'c')
+legend('Pixi','Rtklib');
+title('Velocity in East direction');
+ylabel('Velocity [m/s]')
+xlabel('Time [s]');
+
+subplot(3,1,3)
+plot(timestamp_p(1:TimeEnd)-timeStart,v_d_p(1:TimeEnd));
+hold on;
+grid on;
+plot(timestamp_r(1:TimeEnd)-timeStart,v_d_r(1:TimeEnd),'r')
+legend('Pixi','Rtklib');
+title('Velocity in Down direction');
+ylabel('Velocity [m/s]')
+xlabel('Time [s]');
