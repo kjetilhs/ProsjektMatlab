@@ -2,10 +2,10 @@
 %rtklib 23
 close all;
 clear;
-load('log_folder/neptusLog/Springeoekt1/Data.mat')
-
+load('log_folder/neptusLog/Vandring2/Data.mat')
+PIXI = 0;
 len = length(RtkFix.src_ent);
-TimeEnd = 190;
+
 numberRTK = 0;
 numberPIXI = 0;
 %% Finding the number of RKT and PIXI
@@ -129,95 +129,164 @@ for i = 1:length(n_p)-1
     ed_p(i) = (e_p(i+1)-e_p(i))/(timestamp_p(i+1)-timestamp_p(i));
     dd_p(i) = (d_p(i+1)-d_p(i))/(timestamp_p(i+1)-timestamp_p(i));
 end
-%% Plot 
-figure(1);
-plot(e_p,n_p);
-hold on;
-plot(e_r,n_r,'r');
-grid on;
-title('XY'); 
-xlabel('East [m]'); ylabel('North [m]');
-legend('Pixi','RtkLib');
+%% Plot
+TimeEndr = length(timestamp_r);
+TimeEndp = length(timestamp_p);
+if PIXI
+    figure(1);
+    plot(e_p,n_p);
+    hold on;
+    plot(e_r,n_r,'r');
+    grid on;
+    title('XY'); 
+    xlabel('East [m]'); ylabel('North [m]');
+    legend('Pixi','RtkLib');
 
-% figure(2);
-% plot3(e_p,n_p,d_p);
-% grid on;
-% title('NED Piksi'); 
-% xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
-% 
-% figure(4);
-% plot3(e_r,n_r,d_r);
-% grid on;
-% title('NED rtklib'); 
-% xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+    % figure(2);
+    % plot3(e_p,n_p,d_p);
+    % grid on;
+    % title('NED Piksi'); 
+    % xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+    % 
+    % figure(4);
+    % plot3(e_r,n_r,d_r);
+    % grid on;
+    % title('NED rtklib'); 
+    % xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
 
 
-figure(2);
-subplot(2,1,1);
-plot(timestamp_p(1:TimeEnd)-timeStart,d_p(1:TimeEnd),'b');
-% grid on;
-% title('Down Piksi'); 
-% xlabel('Time [s]'); ylabel('Down [m]');
+    figure(2);
+    subplot(2,1,1);
+    plot(timestamp_p(1:TimeEndp)-timeStart,d_p(1:TimeEndp),'b');
+    % grid on;
+    % title('Down Piksi'); 
+    % xlabel('Time [s]'); ylabel('Down [m]');
 
-hold on;
-plot(timestamp_r(1:TimeEnd)-timeStart,d_r(1:TimeEnd),'r');
-grid on;
-title('Down Rtklib');
-legend('Pixi','Rtklib')
-xlabel('Time [s]');
-ylabel('Down [m]');
+    hold on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,d_r(1:TimeEndr),'r');
+    grid on;
+    title('Down Rtklib');
+    legend('Pixi','Rtklib')
+    xlabel('Time [s]');
+    ylabel('Down [m]');
 
-subplot(2,1,2)
-plot(timestamp_p(1:TimeEnd)-timeStart,type_p(1:TimeEnd),'b');
-hold on;
-plot(timestamp_r(1:TimeEnd)-timeStart,type_r(1:TimeEnd),'r');
-grid on;
-title('Abiguity solution')
-ylabel('Solution type')
-xlabel('Time [s]');
-legend('Pixi','Rtklib');
-ylim([0 5]);
+    subplot(2,1,2)
+    plot(timestamp_p(1:TimeEndp)-timeStart,type_p(1:TimeEndp),'b');
+    hold on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,type_r(1:TimeEndr),'r');
+    grid on;
+    title('Abiguity solution')
+    ylabel('Solution type')
+    xlabel('Time [s]');
+    legend('Pixi','Rtklib');
+    ylim([0 5]);
 
-figure(3)
-subplot(3,1,1)
-plot(timestamp_p(1:TimeEnd)-timeStart,v_n_p(1:TimeEnd));
-hold on;
-grid on;
-plot(timestamp_r(1:TimeEnd)-timeStart,v_n_r(1:TimeEnd),'r')
-legend('Pixi','Rtklib');
-title('Velocity in North direction');
-ylabel('Velocity [m/s]')
-xlabel('Time [s]');
+    figure(3)
+    subplot(3,1,1)
+    plot(timestamp_p(1:TimeEndp)-timeStart,v_n_p(1:TimeEndp));
+    hold on;
+    grid on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,v_n_r(1:TimeEndr),'r')
+    legend('Pixi','Rtklib');
+    title('Velocity in North direction');
+    ylabel('Velocity [m/s]')
+    xlabel('Time [s]');
 
-subplot(3,1,2)
-plot(timestamp_p(1:TimeEnd)-timeStart,v_e_p(1:TimeEnd));
-hold on;
-grid on;
-plot(timestamp_r(1:TimeEnd)-timeStart,v_e_r(1:TimeEnd),'r')
-% plot(timestamp_p(1:TimeEnd)-timeStart,ed_p(1:TimeEnd),'g');
-% plot(timestamp_r(1:TimeEnd)-timeStart,ed_r(1:TimeEnd),'c')
-legend('Pixi','Rtklib');
-title('Velocity in East direction');
-ylabel('Velocity [m/s]')
-xlabel('Time [s]');
+    subplot(3,1,2)
+    plot(timestamp_p(1:TimeEndp)-timeStart,v_e_p(1:TimeEndp));
+    hold on;
+    grid on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,v_e_r(1:TimeEndr),'r')
+    % plot(timestamp_p(1:TimeEnd)-timeStart,ed_p(1:TimeEnd),'g');
+    % plot(timestamp_r(1:TimeEnd)-timeStart,ed_r(1:TimeEnd),'c')
+    legend('Pixi','Rtklib');
+    title('Velocity in East direction');
+    ylabel('Velocity [m/s]')
+    xlabel('Time [s]');
 
-subplot(3,1,3)
-plot(timestamp_p(1:TimeEnd)-timeStart,v_d_p(1:TimeEnd));
-hold on;
-grid on;
-plot(timestamp_r(1:TimeEnd)-timeStart,v_d_r(1:TimeEnd),'r')
-legend('Pixi','Rtklib');
-title('Velocity in Down direction');
-ylabel('Velocity [m/s]')
-xlabel('Time [s]');
+    subplot(3,1,3)
+    plot(timestamp_p(1:TimeEndp)-timeStart,v_d_p(1:TimeEndp));
+    hold on;
+    grid on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,v_d_r(1:TimeEndr),'r')
+    legend('Pixi','Rtklib');
+    title('Velocity in Down direction');
+    ylabel('Velocity [m/s]')
+    xlabel('Time [s]');
 
-figure(4)
-plot(timestamp_p(1:TimeEnd)-timeStart,satellites_p(1:TimeEnd));
-hold on;
-plot(timestamp_r(1:TimeEnd)-timeStart,satellites_r(1:TimeEnd),'r');
-grid on;
-title('Visable satellites')
-xlabel('Time [s]');
-ylabel('Number of satellites');
-legend('Pixi','Rtklib');
-ylim([4 12])
+    figure(4)
+    plot(timestamp_p(1:TimeEndp)-timeStart,satellites_p(1:TimeEndp));
+    hold on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,satellites_r(1:TimeEndr),'r');
+    grid on;
+    title('Visable satellites')
+    xlabel('Time [s]');
+    ylabel('Number of satellites');
+    legend('Pixi','Rtklib');
+    ylim([4 12])
+else
+    figure(1);
+    plot(e_r,n_r,'r');
+    grid on;
+    title('XY'); 
+    xlabel('East [m]'); ylabel('North [m]');
+
+    % figure(2);
+    % plot3(e_p,n_p,d_p);
+    % grid on;
+    % title('NED Piksi'); 
+    % xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+    % 
+    % figure(4);
+    % plot3(e_r,n_r,d_r);
+    % grid on;
+    % title('NED rtklib'); 
+    % xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+
+
+    figure(2);
+    subplot(2,1,1);
+    plot(timestamp_r(1:TimeEndr)-timeStart,d_r(1:TimeEndr),'r');
+    grid on;
+    title('Down Rtklib');
+    xlabel('Time [s]');
+    ylabel('Down [m]');
+
+    subplot(2,1,2)
+    plot(timestamp_r(1:TimeEndr)-timeStart,type_r(1:TimeEndr),'r');
+    grid on;
+    title('Abiguity solution')
+    ylabel('Solution type')
+    xlabel('Time [s]');
+    ylim([0 5]);
+
+    figure(3)
+    subplot(3,1,1)
+    grid on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,v_n_r(1:TimeEndr),'r')
+    title('Velocity in North direction');
+    ylabel('Velocity [m/s]')
+    xlabel('Time [s]');
+
+    subplot(3,1,2)
+    grid on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,v_e_r(1:TimeEndr),'r')
+    title('Velocity in East direction');
+    ylabel('Velocity [m/s]')
+    xlabel('Time [s]');
+
+    subplot(3,1,3)
+    grid on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,v_d_r(1:TimeEndr),'r')
+    title('Velocity in Down direction');
+    ylabel('Velocity [m/s]')
+    xlabel('Time [s]');
+
+    figure(4)
+    plot(timestamp_r(1:TimeEndr)-timeStart,satellites_r(1:TimeEndr),'r');
+    grid on;
+    title('Visable satellites')
+    xlabel('Time [s]');
+    ylabel('Number of satellites');
+    ylim([4 12])
+end
