@@ -2,8 +2,8 @@
 %rtklib 23
 close all;
 clear;
-load('log_folder/neptusLog/Vandring2/Data.mat')
-PIXI = 0;
+load('log_folder/neptusLog/Vandring3/Data.mat')
+PIXI = 1;
 len = length(RtkFix.src_ent);
 
 numberRTK = 0;
