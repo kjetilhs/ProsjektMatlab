@@ -2,7 +2,7 @@
 %rtklib 23
 close all;
 clear;
-load('log_folder/neptusLog/Vandring4/Data.mat')
+load('log_folder/neptusLog/Vandring3/Data.mat')
 PIXI = 1;
 len = length(RtkFix.src_ent);
 
@@ -133,36 +133,36 @@ for i = 1:length(n_p)-1
 end
 %% Retrive only fix type solution
 % RTK
-timestampFix_r = zeros(1,fixRTK);
-srcFix_r = zeros(1,fixRTK);
-src_entFix_r = zeros(1,fixRTK);
-dstFix_r =zeros(1,fixRTK);
-towFix_r = zeros(1,fixRTK);
-nFix_r = zeros(1,fixRTK);
-eFix_r = zeros(1,fixRTK);
-dFix_r = zeros(1,fixRTK);
-vFix_n_r = zeros(1,fixRTK);
-vFix_e_r = zeros(1,fixRTK);
-vFix_d_r = zeros(1,fixRTK);
-satellitesFix_r = zeros(1,fixRTK);
-iar_hypFix_r = zeros(1,fixRTK);
-iar_ratioFix_r = zeros(1,fixRTK);
+timestampFix_r = zeros(1,fixRTK-1);
+srcFix_r = zeros(1,fixRTK-1);
+src_entFix_r = zeros(1,fixRTK-1);
+dstFix_r =zeros(1,fixRTK-1);
+towFix_r = zeros(1,fixRTK-1);
+nFix_r = zeros(1,fixRTK-1);
+eFix_r = zeros(1,fixRTK-1);
+dFix_r = zeros(1,fixRTK-1);
+vFix_n_r = zeros(1,fixRTK-1);
+vFix_e_r = zeros(1,fixRTK-1);
+vFix_d_r = zeros(1,fixRTK-1);
+satellitesFix_r = zeros(1,fixRTK-1);
+iar_hypFix_r = zeros(1,fixRTK-1);
+iar_ratioFix_r = zeros(1,fixRTK-1);
 
 %Piksi
-timestampFix_p = zeros(1,fixPixi);
-srcFix_p = zeros(1,fixPixi);
-src_entFix_p = zeros(1,fixPixi);
-dstFix_p =zeros(1,fixPixi);
-towFix_p = zeros(1,fixPixi);
-nFix_p = zeros(1,fixPixi);
-eFix_p = zeros(1,fixPixi);
-dFix_p = zeros(1,fixPixi);
-vFix_n_p = zeros(1,fixPixi);
-vFix_e_p = zeros(1,fixPixi);
-vFix_d_p = zeros(1,fixPixi);
-satellitesFix_p = zeros(1,fixPixi);
-iar_hypFix_p = zeros(1,fixPixi);
-iar_ratioFix_p = zeros(1,fixPixi);
+timestampFix_p = zeros(1,fixPixi-1);
+srcFix_p = zeros(1,fixPixi-1);
+src_entFix_p = zeros(1,fixPixi-1);
+dstFix_p =zeros(1,fixPixi-1);
+towFix_p = zeros(1,fixPixi-1);
+nFix_p = zeros(1,fixPixi-1);
+eFix_p = zeros(1,fixPixi-1);
+dFix_p = zeros(1,fixPixi-1);
+vFix_n_p = zeros(1,fixPixi-1);
+vFix_e_p = zeros(1,fixPixi-1);
+vFix_d_p = zeros(1,fixPixi-1);
+satellitesFix_p = zeros(1,fixPixi-1);
+iar_hypFix_p = zeros(1,fixPixi-1);
+iar_ratioFix_p = zeros(1,fixPixi-1);
 PiksiFixC = 1;
 for i=1:j-1
     if type_p(i)==3
@@ -205,7 +205,7 @@ for i=1:k-1
 end
 
 %% Calculate standard deviation of the difference between rtklib and piksi
-minL = min([fixPixi fixRTK]);
+minL = min([fixPixi fixRTK])-1;
 ex = zeros(1,minL);
 ey = zeros(1,minL);
 ez = zeros(1,minL);
@@ -241,9 +241,9 @@ TimeEndr = length(timestamp_r);
 TimeEndp = length(timestamp_p);
 if PIXI
     figure(1);
-    plot(e_p,n_p,'xb');
+    plot(eFix_p,nFix_p,'xb');
     hold on;
-    plot(e_r,n_r,'xr');
+    plot(eFix_r,nFix_r,'xr');
     grid on;
     title('XY'); 
     xlabel('East [m]'); ylabel('North [m]');
@@ -264,14 +264,14 @@ if PIXI
 
     figure(2);
     subplot(2,1,1);
-    plot(timestamp_p(1:TimeEndp)-timeStart,d_p(1:TimeEndp),'xb');
+    plot(timestampFix_p(1:fixPixi-1)-timeStart,dFix_p(1:fixPixi-1),'xb');
 %     plot(dft_p-timeStart,df_p,'b');
     % grid on;
     % title('Down Piksi'); 
     % xlabel('Time [s]'); ylabel('Down [m]');
 
     hold on;
-    plot(timestamp_r(1:TimeEndr)-timeStart,d_r(1:TimeEndr),'xr');
+    plot(timestampFix_r(1:fixRTK-1)-timeStart,dFix_r(1:fixRTK-1),'xr');
     grid on;
     title('Down Rtklib');
     legend('Pixi','Rtklib')
