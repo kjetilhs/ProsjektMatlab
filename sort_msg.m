@@ -204,10 +204,31 @@ for i=1:k-1
     end
 end
 
-%% C
+%% Creating timeseries
+xFix_r = timeseries(nFix_r,timestampFix_r,'Name','RTKLIB');
+yFix_r = timeseries(eFix_r,timestampFix_r,'Name','RTKLIB');
+zFix_r = timeseries(dFix_r,timestampFix_r,'Name','RTKLIB');
+uFix_r = timeseries(vFix_n_r,timestampFix_r,'Name','RTKLIB');
+vFix_r = timeseries(vFix_e_r,timestampFix_r,'Name','RTKLIB');
+wFix_r = timeseries(vFix_d_r,timestampFix_r,'Name','RTKLIB');
 
+xFix_p = timeseries(nFix_p,timestampFix_p,'Name','PIKSI');
+yFix_p = timeseries(eFix_p,timestampFix_p,'Name','PIKSI');
+zFix_p = timeseries(dFix_p,timestampFix_p,'Name','PIKSI');
+uFix_p = timeseries(vFix_n_p,timestampFix_p,'Name','PIKSI');
+vFix_p = timeseries(vFix_e_p,timestampFix_p,'Name','PIKSI');
+wFix_p = timeseries(vFix_d_p,timestampFix_p,'Name','PIKSI');
+
+%% Synchornice timeseries
+
+[xFix_r, xFix_p] = synchronize(xFix_r,xFix_p,'union');
+[yFix_r, yFix_p] = synchronize(yFix_r,yFix_p,'union');
+[zFix_r, zFix_p] = synchronize(zFix_r,zFix_p,'union');
+[uFix_r, uFix_p] = synchronize(uFix_r,uFix_p,'union');
+[vFix_r, vFix_p] = synchronize(vFix_r,vFix_p,'union');
+[wFix_r, wFix_p] = synchronize(wFix_r,wFix_p,'union');
 %% Calculate standard deviation of the difference between rtklib and piksi
-minL = min([fixPixi fixRTK])-1;
+minL = length(xFix_r.Data);
 ex = zeros(1,minL);
 ey = zeros(1,minL);
 ez = zeros(1,minL);
@@ -222,13 +243,19 @@ stdu = zeros(1,minL);
 stdv = zeros(1,minL);
 stdw = zeros(1,minL);
 
+meanx = zeros(1,minL);
+meany = zeros(1,minL);
+meanz = zeros(1,minL);
+meanu = zeros(1,minL);
+meanv = zeros(1,minL);
+meanw = zeros(1,minL);
 for i=1:minL
-    ex(i) = nFix_r(i)-nFix_p(i); 
-    ey(i) = eFix_r(i)-eFix_p(i);
-    ez(i) = dFix_r(i)-dFix_p(i);
-    eu(i) = vFix_n_r(i)-vFix_n_p(i);
-    ev(i) = vFix_e_r(i)-vFix_e_p(i);
-    ew(i) = vFix_d_r(i)-vFix_d_p(i);
+    ex(i) = xFix_r.Data(i)-xFix_p.Data(i); 
+    ey(i) = yFix_r.Data(i)-yFix_p.Data(i);
+    ez(i) = zFix_r.Data(i)-wFix_p.Data(i);
+    eu(i) = uFix_r.Data(i)-uFix_p.Data(i);
+    ev(i) = vFix_r.Data(i)-vFix_p.Data(i);
+    ew(i) = wFix_r.Data(i)-wFix_p.Data(i);
 
     stdx(i) = std(ex(1:i));
     stdy(i) = std(ey(1:i));
@@ -236,6 +263,14 @@ for i=1:minL
     stdu(i) = std(eu(1:i));
     stdv(i) = std(ev(1:i));
     stdw(i) = std(ew(1:i));
+    
+    meanx(i) = mean(ex(1:i));
+    meany(i) = mean(ey(1:i));
+    meanz(i) = mean(ez(1:i));
+    meanu(i) = mean(eu(1:i));
+    meanv(i) = mean(ev(1:i));
+    meanw(i) = mean(ew(1:i));
+
 end
 
 %% Plot
@@ -293,20 +328,20 @@ if PIXI
 
     figure(3)
     subplot(3,1,1)
-    plot(timestamp_p(1:TimeEndp)-timeStart,v_n_p(1:TimeEndp),'xb');
+    plot(timestampFix_p(1:fixPixi-1)-timeStart,vFix_n_p(1:fixPixi-1),'xb');
     hold on;
     grid on;
-    plot(timestamp_r(1:TimeEndr)-timeStart,v_n_r(1:TimeEndr),'xr')
+    plot(timestampFix_r(1:fixRTK-1)-timeStart,vFix_n_r(1:fixRTK-1),'xr')
     legend('Pixi','Rtklib');
     title('Velocity in North direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
 
     subplot(3,1,2)
-    plot(timestamp_p(1:TimeEndp)-timeStart,v_e_p(1:TimeEndp),'xb');
+    plot(timestampFix_p(1:fixPixi-1)-timeStart,vFix_e_p(1:fixPixi-1),'xb');
     hold on;
     grid on;
-    plot(timestamp_r(1:TimeEndr)-timeStart,v_e_r(1:TimeEndr),'xr')
+    plot(timestampFix_r(1:fixRTK-1)-timeStart,v_e_r(1:fixRTK-1),'xr')
     % plot(timestamp_p(1:TimeEnd)-timeStart,ed_p(1:TimeEnd),'g');
     % plot(timestamp_r(1:TimeEnd)-timeStart,ed_r(1:TimeEnd),'c')
     legend('Pixi','Rtklib');
@@ -315,10 +350,10 @@ if PIXI
     xlabel('Time [s]');
 
     subplot(3,1,3)
-    plot(timestamp_p(1:TimeEndp)-timeStart,v_d_p(1:TimeEndp),'xb');
+    plot(timestampFix_p(1:fixPixi-1)-timeStart,vFix_d_p(1:fixPixi-1),'xb');
     hold on;
     grid on;
-    plot(timestamp_r(1:TimeEndr)-timeStart,v_d_r(1:TimeEndr),'xr')
+    plot(timestampFix_r(1:fixRTK-1)-timeStart,vFix_d_r(1:fixRTK-1),'xr')
     legend('Pixi','Rtklib');
     title('Velocity in Down direction');
     ylabel('Velocity [m/s]')
@@ -344,17 +379,161 @@ if PIXI
     histogram(deltatime_p);
     title('Piksi');
     figure(7)
-    plot(stdx);
+    plot(xFix_r.Time-timeStart,stdx);
+    title('North standard deviation')
+    grid on;
+    xlabel('Time [s]');
+    ylabel('Standard deviation');
     figure(8)
-    plot(stdy);
+    plot(vFix_r.Time-timeStart,stdy);
+    title('East standard deviation')
+    grid on;
+    xlabel('Time [s]');
+    ylabel('Standard deviation');
     figure(9)
-    plot(stdz);
+    plot(zFix_r.Time-timeStart,stdz);
+    title('Down standard deviation')
+    grid on;
+    xlabel('Time [s]');
+    ylabel('Standard deviation');
     figure(10)
-    plot(stdu);
+    plot(uFix_r.Time-timeStart,stdu);
+    title('North velocity standard deviation')
+    grid on;
+    xlabel('Time [s]');
+    ylabel('Standard deviation');
     figure(11)
-    plot(stdv);
+    plot(vFix_r.Time-timeStart,stdv);
+    title('East velocity standard deviation')
+    grid on;
+    xlabel('Time [s]');
+    ylabel('Standard deviation');
     figure(12)
-    plot(stdw);
+    plot(wFix_r.Time-timeStart,stdw);
+    title('Down velocity standard deviation')
+    grid on;
+    xlabel('Time [s]');
+    ylabel('Standard deviation');
+    
+    figure(13);
+    subplot(2,1,1);
+    plot(timestampFix_p(1:fixPixi-1)-timeStart,nFix_p(1:fixPixi-1),'xb');
+    hold on;
+    plot(timestampFix_r(1:fixRTK-1)-timeStart,nFix_r(1:fixRTK-1),'xr');
+    grid on;
+    title('North Rtklib');
+    legend('Pixi','Rtklib')
+    xlabel('Time [s]');
+    ylabel('Down [m]');
+
+    subplot(2,1,2)
+    plot(timestampFix_p(1:fixPixi-1)-timeStart,eFix_p(1:fixPixi-1),'xb');
+    hold on;
+    plot(timestampFix_r(1:fixRTK-1)-timeStart,eFix_r(1:fixRTK-1),'xr');
+    grid on;
+    title('East Rtklib');
+    legend('Pixi','Rtklib')
+    xlabel('Time [s]');
+    ylabel('Down [m]');
+    
+    
+    
+    
+    figure(14);
+    plot(yFix_p.Data(:),xFix_p.Data(:),'xb');
+    hold on;
+    plot(yFix_r.Data(:),xFix_r.Data(:),'xr');
+    grid on;
+    title('XY'); 
+    xlabel('East [m]'); ylabel('North [m]');
+    legend('Pixi','RtkLib');
+
+    % figure(2);
+    % plot3(e_p,n_p,d_p);
+    % grid on;
+    % title('NED Piksi'); 
+    % xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+    % 
+    % figure(4);
+    % plot3(e_r,n_r,d_r);
+    % grid on;
+    % title('NED rtklib'); 
+    % xlabel('East [m]'); ylabel('North [m]'); zlabel('Down [m]');
+
+
+    figure(15);
+    subplot(2,1,1);
+    plot(zFix_p.Time-timeStart,zFix_p.Data(:),'xb');
+%     plot(dft_p-timeStart,df_p,'b');
+    % grid on;
+    % title('Down Piksi'); 
+    % xlabel('Time [s]'); ylabel('Down [m]');
+
+    hold on;
+    plot(zFix_r.Time-timeStart,zFix_r.Data(:),'xr');
+    grid on;
+    title('Down Rtklib');
+    legend('Pixi','Rtklib')
+    xlabel('Time [s]');
+    ylabel('Down [m]');
+
+    subplot(2,1,2)
+    plot(timestamp_p(1:TimeEndp)-timeStart,type_p(1:TimeEndp),'b');
+    hold on;
+    plot(timestamp_r(1:TimeEndr)-timeStart,type_r(1:TimeEndr),'r');
+    grid on;
+    title('Ambiguity solution')
+    ylabel('Solution type')
+    xlabel('Time [s]');
+    legend('Pixi','Rtklib');
+    ylim([0 5]);
+
+    figure(16)
+    subplot(3,1,1)
+    plot(uFix_p.Time-timeStart,uFix_p.Data(:),'xb');
+    hold on;
+    grid on;
+    plot(uFix_r.Time-timeStart,uFix_r.Data(:),'xr')
+    legend('Pixi','Rtklib');
+    title('Velocity in North direction');
+    ylabel('Velocity [m/s]')
+    xlabel('Time [s]');
+
+    subplot(3,1,2)
+    plot(vFix_p.Time-timeStart,vFix_p.Data(:),'xb');
+    hold on;
+    grid on;
+    plot(vFix_r.Time-timeStart,vFix_r.Data(:),'xr')
+    % plot(timestamp_p(1:TimeEnd)-timeStart,ed_p(1:TimeEnd),'g');
+    % plot(timestamp_r(1:TimeEnd)-timeStart,ed_r(1:TimeEnd),'c')
+    legend('Pixi','Rtklib');
+    title('Velocity in East direction');
+    ylabel('Velocity [m/s]')
+    xlabel('Time [s]');
+
+    subplot(3,1,3)
+    plot(wFix_p.Time-timeStart,wFix_p.Data(:),'xb');
+    hold on;
+    grid on;
+    plot(wFix_r.Time-timeStart,wFix_r.Data(:),'xr')
+    legend('Pixi','Rtklib');
+    title('Velocity in Down direction');
+    ylabel('Velocity [m/s]')
+    xlabel('Time [s]');
+    
+    
+    figure(17);
+    plot(meanx);
+    figure(18);
+    plot(meany);
+    figure(19);
+    plot(meanz);
+    figure(20);
+    plot(meanu);
+    figure(21);
+    plot(meanv);
+    figure(22);
+    plot(meanw);
     
 else
     figure(1);
