@@ -204,6 +204,8 @@ for i=1:k-1
     end
 end
 
+%% C
+
 %% Calculate standard deviation of the difference between rtklib and piksi
 minL = min([fixPixi fixRTK])-1;
 ex = zeros(1,minL);
