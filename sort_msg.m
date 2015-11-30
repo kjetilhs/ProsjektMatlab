@@ -523,18 +523,41 @@ if PIXI
     
     
     figure(17);
-    plot(meanx);
+    plot(xFix_r.Time-timeStart,meanx);
+    grid on;
+    title('The mean difference in North estimation');
+    ylabel('Mean difference [m]');
+    xlabel('Time [s]');
     figure(18);
-    plot(meany);
+    plot(yFix_r.Time-timeStart,meany);
+    grid on;
+    title('The mean difference in East estimation');
+    ylabel('Mean difference [m]');
+    xlabel('Time [s]');
     figure(19);
-    plot(meanz);
+    plot(zFix_r.Time-timeStart,meanz);
+    grid on;
+    title('The mean difference in Down estimation');
+    ylabel('Mean difference [m]');
+    xlabel('Time [s]');
     figure(20);
-    plot(meanu);
+    plot(uFix_r.Time-timeStart,meanu);
+    grid on;
+    title('The mean difference in North velocity estimation');
+    ylabel('Mean difference [m/s]');
+    xlabel('Time [s]');
     figure(21);
-    plot(meanv);
+    plot(vFix_r.Time-timeStart,meanv);
+    grid on;
+    title('The mean difference in East velocity estimation');
+    ylabel('Mean difference [m/s]');
+    xlabel('Time [s]');
     figure(22);
-    plot(meanw);
-    
+    plot(wFix_r.Time-timeStart,meanw);
+    grid on;
+    title('The mean difference in Down velocity estimation');
+    ylabel('Mean difference [m/s]');
+    xlabel('Time [s]');
 else
     figure(1);
     plot(e_r,n_r,'r');
