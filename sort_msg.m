@@ -3,6 +3,7 @@
 close all;
 clear;
 load('log_folder/neptusLog/Vandring6/Data.mat')
+PostPro = load('log_folder/PostPro/rtklib_ubxstream_x8_log201512061145.pos');
 PIXI = 1;
 len = length(RtkFix.src_ent);
 
@@ -120,16 +121,81 @@ for i=1:len
         
 
 end
+%% Fixing tow for Piksi, rtklib and PostPro
+tow_p = tow_p.*10^-3;
+start = 1;
+stop = 0;
+PostTimeStart = PostPro(:,2) == tow_r(1);
+[rowStart,colStart] = find(PostTimeStart);
+PostTimeStop = PostPro(:,2) == tow_r(end);
+[rowStop,colStop] = find(PostTimeStop);
+res = 0.1;
+% Since the postprosesing give tow with millisecond, and the output from
+% rtkrcv currently does not the closes time need to be found. 
+while isempty(rowStart)
+    PostTimeStart = abs(PostPro(:,2) - tow_r(1))<=res;
+    [rowStart,colStart] = find(PostTimeStart);
+    res = res+0.1;
+end
+res = 0.1;
+while isempty(rowStop)
+    PostTimeStop = abs(PostPro(:,2) - tow_r(end))<=res;
+    [rowStop,colStop] = find(PostTimeStop);
+    res = res+0.1;
+end
+PostTimeStart = PostPro(rowStart(end),2);
+PostTimeStop = PostPro(rowStop(end),2);
+for i=1:k-1
+    if tow_r(i) == tow_r(start)
+        stop = stop + 1;
+    elseif tow_r(i) ~= tow_r(start)
+        
+        diff = i-start;
+        if diff == 0
+            diff = 1;
+        end
+        for n=0:diff-1
+           tow_r(n+start) = tow_r(n+start)+n/diff; 
+        end
+        start = i;
+        stop = i;
+    end
+end
+if tow_r(1)<tow_p(1)
+    towTimeStart = tow_r(1);
+else
+    towTimeStart = tow_p(1);
+end
+%% Extracting data from PostPro
+PostN = PostPro(rowStart(end):rowStop(end),4);
+PostE = PostPro(rowStart(end):rowStop(end),3);
+PostD = - PostPro(rowStart(end):rowStop(end),5);
+PostType = PostPro(rowStart(end):rowStop(end),6);
+PostTime = PostPro(rowStart(end):rowStop(end),2);
+%% Correcting def off fix,float none from PostPro
+for i = 1:length(PostType)
+    if PostType(i) == 1 %FIX
+        PostType(i) = 3;
+    elseif PostType(i) == 2 % FLOAT
+        PostType(i) = 2;
+    else
+        PostType(i) = 0;
+    end
+end
+
 %% Calculate time difference between timestamp
 
+deltatimetow_r = zeros(1,length(n_r)-1);
+deltatimetow_p = zeros(1,length(n_p)-1);
 deltatime_r = zeros(1,length(n_r)-1);
 deltatime_p = zeros(1,length(n_p)-1);
-
 for i = 1:length(n_r)-1
-    deltatime_r(i) = timestamp_r(i+1)-timestamp_r(i);
+      deltatime_r(i) = timestamp_r(i+1)-timestamp_r(i);
+      deltatimetow_r(i) = tow_r(i+1)-tow_r(i);
 end
 for i = 1:length(n_p)-1
-    deltatime_p(i) = timestamp_p(i+1)-timestamp_p(i);
+      deltatime_p(i) = timestamp_p(i+1)-timestamp_p(i);
+      deltatimetow_p(i) = tow_p(i+1)-tow_p(i);
 end
 %% Retrive only fix type solution
 % RTK
@@ -205,19 +271,19 @@ for i=1:k-1
 end
 
 %% Creating timeseries
-xFix_r = timeseries(nFix_r,timestampFix_r,'Name','RTKLIB');
-yFix_r = timeseries(eFix_r,timestampFix_r,'Name','RTKLIB');
-zFix_r = timeseries(dFix_r,timestampFix_r,'Name','RTKLIB');
-uFix_r = timeseries(vFix_n_r,timestampFix_r,'Name','RTKLIB');
-vFix_r = timeseries(vFix_e_r,timestampFix_r,'Name','RTKLIB');
-wFix_r = timeseries(vFix_d_r,timestampFix_r,'Name','RTKLIB');
+xFix_r = timeseries(nFix_r,towFix_r,'Name','RTKLIB');
+yFix_r = timeseries(eFix_r,towFix_r,'Name','RTKLIB');
+zFix_r = timeseries(dFix_r,towFix_r,'Name','RTKLIB');
+uFix_r = timeseries(vFix_n_r,towFix_r,'Name','RTKLIB');
+vFix_r = timeseries(vFix_e_r,towFix_r,'Name','RTKLIB');
+wFix_r = timeseries(vFix_d_r,towFix_r,'Name','RTKLIB');
 
-xFix_p = timeseries(nFix_p,timestampFix_p,'Name','PIKSI');
-yFix_p = timeseries(eFix_p,timestampFix_p,'Name','PIKSI');
-zFix_p = timeseries(dFix_p,timestampFix_p,'Name','PIKSI');
-uFix_p = timeseries(vFix_n_p,timestampFix_p,'Name','PIKSI');
-vFix_p = timeseries(vFix_e_p,timestampFix_p,'Name','PIKSI');
-wFix_p = timeseries(vFix_d_p,timestampFix_p,'Name','PIKSI');
+xFix_p = timeseries(nFix_p,towFix_p,'Name','PIKSI');
+yFix_p = timeseries(eFix_p,towFix_p,'Name','PIKSI');
+zFix_p = timeseries(dFix_p,towFix_p,'Name','PIKSI');
+uFix_p = timeseries(vFix_n_p,towFix_p,'Name','PIKSI');
+vFix_p = timeseries(vFix_e_p,towFix_p,'Name','PIKSI');
+wFix_p = timeseries(vFix_d_p,towFix_p,'Name','PIKSI');
 
 %% Synchornice timeseries
 
@@ -281,10 +347,11 @@ if PIXI
     plot(eFix_p,nFix_p,'xb');
     hold on;
     plot(eFix_r,nFix_r,'xr');
+    plot(PostE,PostN,'xg');
     grid on;
     title('XY'); 
     xlabel('East [m]'); ylabel('North [m]');
-    legend('Pixi','RtkLib');
+    legend('Pixi','RtkLib','post processed rtklib');
 
     % figure(2);
     % plot3(e_p,n_p,d_p);
@@ -301,29 +368,26 @@ if PIXI
 
     figure(2);
     subplot(2,1,1);
-    plot(timestampFix_p(1:fixPixi-1)-timeStart,dFix_p(1:fixPixi-1),'xb');
-%     plot(dft_p-timeStart,df_p,'b');
-    % grid on;
-    % title('Down Piksi'); 
-    % xlabel('Time [s]'); ylabel('Down [m]');
-
+    plot(towFix_p-towFix_p(1),dFix_p,'xb');
     hold on;
-    plot(timestampFix_r(1:fixRTK-1)-timeStart,dFix_r(1:fixRTK-1),'xr');
+    plot(towFix_r-towFix_r(1),dFix_r,'xr');
+    plot(PostTime-PostTime(1),PostD,'xg');
     grid on;
-    title('Down Rtklib');
-    legend('Pixi','Rtklib')
+    title('Down');
+    legend('Pixi','Rtklib','post processed rtklib')
     xlabel('Time [s]');
     ylabel('Down [m]');
 
     subplot(2,1,2)
-    plot(timestamp_p(1:TimeEndp)-timeStart,type_p(1:TimeEndp),'b');
+    plot(tow_p-tow_p(1),type_p,'b');
     hold on;
-    plot(timestamp_r(1:TimeEndr)-timeStart,type_r(1:TimeEndr),'r');
+    plot(tow_r-tow_r(1),type_r,'r');
+    plot(PostTime-PostTime(1),PostType,'--g');
     grid on;
     title('Ambiguity solution')
     ylabel('Solution type')
     xlabel('Time [s]');
-    legend('Pixi','Rtklib');
+    legend('Pixi','Rtklib','post processed rtklib');
     ylim([0 5]);
 
     figure(3)
@@ -370,51 +434,67 @@ if PIXI
     legend('Pixi','Rtklib');
     ylim([4 12])
     
-    
-    figure(5) 
-    histogram(deltatime_r)
-    title('RTKLIB');
+    %% Histogram
+    figure(5)
+    subplot(2,1,1);
+    histogram(deltatimetow_r)
+    title('RTKLIB tow');
     xlabel('Time [s]');
+    
+    subplot(2,1,2);
+    histogram(deltatime_r)
+    title('RTKLIB timestamp');
+    xlabel('Time [s]');
+    
 	figure(6)
+    subplot(2,1,1);
+    histogram(deltatimetow_p);
+    title('Piksi tow');
+    xlabel('Time [s]');
+    subplot(2,1,2);
     histogram(deltatime_p);
-    title('Piksi');
+    title('Piksi timestamp');
+    xlabel('Time [s]');
+    %% Standard deviation
     figure(7)
-    plot(xFix_r.Time-timeStart,stdx);
+    plot(xFix_r.Time-towTimeStart,stdx);
     title('North standard deviation')
     grid on;
     xlabel('Time [s]');
     ylabel('Standard deviation');
     figure(8)
-    plot(vFix_r.Time-timeStart,stdy);
+    plot(vFix_r.Time-towTimeStart,stdy);
     title('East standard deviation')
     grid on;
     xlabel('Time [s]');
     ylabel('Standard deviation');
     figure(9)
-    plot(zFix_r.Time-timeStart,stdz);
+    plot(zFix_r.Time-towTimeStart,stdz);
     title('Down standard deviation')
     grid on;
     xlabel('Time [s]');
     ylabel('Standard deviation');
     figure(10)
-    plot(uFix_r.Time-timeStart,stdu);
+    plot(uFix_r.Time-towTimeStart,stdu);
     title('North velocity standard deviation')
     grid on;
     xlabel('Time [s]');
     ylabel('Standard deviation');
     figure(11)
-    plot(vFix_r.Time-timeStart,stdv);
+    plot(vFix_r.Time-towTimeStart,stdv);
     title('East velocity standard deviation')
     grid on;
     xlabel('Time [s]');
     ylabel('Standard deviation');
     figure(12)
-    plot(wFix_r.Time-timeStart,stdw);
+    plot(wFix_r.Time-towTimeStart,stdw);
     title('Down velocity standard deviation')
     grid on;
     xlabel('Time [s]');
     ylabel('Standard deviation');
     
+    
+    %% Sync plot
     figure(13);
     subplot(2,1,1);
     plot(timestampFix_p(1:fixPixi-1)-timeStart,nFix_p(1:fixPixi-1),'xb');
@@ -521,39 +601,39 @@ if PIXI
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
     
-    
+    %% Mean plot
     figure(17);
-    plot(xFix_r.Time-timeStart,meanx);
+    plot(xFix_r.Time-towTimeStart,meanx);
     grid on;
     title('The mean difference in North estimation');
     ylabel('Mean difference [m]');
     xlabel('Time [s]');
     figure(18);
-    plot(yFix_r.Time-timeStart,meany);
+    plot(yFix_r.Time-towTimeStart,meany);
     grid on;
     title('The mean difference in East estimation');
     ylabel('Mean difference [m]');
     xlabel('Time [s]');
     figure(19);
-    plot(zFix_r.Time-timeStart,meanz);
+    plot(zFix_r.Time-towTimeStart,meanz);
     grid on;
     title('The mean difference in Down estimation');
     ylabel('Mean difference [m]');
     xlabel('Time [s]');
     figure(20);
-    plot(uFix_r.Time-timeStart,meanu);
+    plot(uFix_r.Time-towTimeStart,meanu);
     grid on;
     title('The mean difference in North velocity estimation');
     ylabel('Mean difference [m/s]');
     xlabel('Time [s]');
     figure(21);
-    plot(vFix_r.Time-timeStart,meanv);
+    plot(vFix_r.Time-towTimeStart,meanv);
     grid on;
     title('The mean difference in East velocity estimation');
     ylabel('Mean difference [m/s]');
     xlabel('Time [s]');
     figure(22);
-    plot(wFix_r.Time-timeStart,meanw);
+    plot(wFix_r.Time-towTimeStart,meanw);
     grid on;
     title('The mean difference in Down velocity estimation');
     ylabel('Mean difference [m/s]');
