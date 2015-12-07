@@ -285,7 +285,18 @@ uFix_p = timeseries(vFix_n_p,towFix_p,'Name','PIKSI');
 vFix_p = timeseries(vFix_e_p,towFix_p,'Name','PIKSI');
 wFix_p = timeseries(vFix_d_p,towFix_p,'Name','PIKSI');
 
+timePostN = timeseries(PostN,PostTime,'Name','PostPro');
+timePostE = timeseries(PostE,PostTime,'Name','PostPro');
+timePostD = timeseries(PostD,PostTime,'Name','PostPro');
 %% Synchornice timeseries
+
+[xpFix_r, timePostN_r] = synchronize(xFix_r,timePostN,'union');
+[ypFix_r, timePostE_r] = synchronize(yFix_r,timePostE,'union');
+[zpFix_r, timePostD_r] = synchronize(zFix_r,timePostD,'union');
+[xpFix_p, timePostN_p] = synchronize(xFix_p,timePostN,'union');
+[ypFix_p, timePostE_p] = synchronize(yFix_p,timePostE,'union');
+[zpFix_p, timePostD_p] = synchronize(zFix_p,timePostD,'union');
+
 
 [xFix_r, xFix_p] = synchronize(xFix_r,xFix_p,'union');
 [yFix_r, yFix_p] = synchronize(yFix_r,yFix_p,'union');
@@ -293,11 +304,20 @@ wFix_p = timeseries(vFix_d_p,towFix_p,'Name','PIKSI');
 [uFix_r, uFix_p] = synchronize(uFix_r,uFix_p,'union');
 [vFix_r, vFix_p] = synchronize(vFix_r,vFix_p,'union');
 [wFix_r, wFix_p] = synchronize(wFix_r,wFix_p,'union');
+
 %% Calculate standard deviation of the difference between rtklib and piksi
+minLp = length(xpFix_p.data);
+minLr = length(xpFix_r.data);
 minL = length(xFix_r.Data);
 ex = zeros(1,minL);
 ey = zeros(1,minL);
 ez = zeros(1,minL);
+epx_p = zeros(1,minLp);
+epy_p = zeros(1,minLp);
+epz_p = zeros(1,minLp);
+epx_r = zeros(1,minLr);
+epy_r = zeros(1,minLr);
+epz_r = zeros(1,minLr);
 eu = zeros(1,minL);
 ev = zeros(1,minL);
 ew = zeros(1,minL);
@@ -305,6 +325,12 @@ ew = zeros(1,minL);
 stdx = zeros(1,minL);
 stdy = zeros(1,minL);
 stdz = zeros(1,minL);
+stdxp_p = zeros(1,minLp);
+stdyp_p = zeros(1,minLp);
+stdzp_p = zeros(1,minLp);
+stdxp_r = zeros(1,minLr);
+stdyp_r = zeros(1,minLr);
+stdzp_r = zeros(1,minLr);
 stdu = zeros(1,minL);
 stdv = zeros(1,minL);
 stdw = zeros(1,minL);
@@ -312,6 +338,12 @@ stdw = zeros(1,minL);
 meanx = zeros(1,minL);
 meany = zeros(1,minL);
 meanz = zeros(1,minL);
+meanxp_p = zeros(1,minLp);
+meanyp_p = zeros(1,minLp);
+meanzp_p = zeros(1,minLp);
+meanxp_r = zeros(1,minLr);
+meanyp_r = zeros(1,minLr);
+meanzp_r = zeros(1,minLr);
 meanu = zeros(1,minL);
 meanv = zeros(1,minL);
 meanw = zeros(1,minL);
@@ -337,6 +369,34 @@ for i=1:minL
     meanv(i) = mean(ev(1:i));
     meanw(i) = mean(ew(1:i));
 
+end
+
+for i=1:minLp
+    epx_p(i) = xpFix_p.Data(i) - timePostN_p.Data(i);
+    epy_p(i) = ypFix_p.Data(i) - timePostE_p.Data(i);
+    epz_p(i) = zpFix_p.Data(i) - timePostD_p.Data(i);
+    
+    stdxp_p(i) = std(epx_p(1:i));
+    stdyp_p(i) = std(epy_p(1:i));
+    stdzp_p(i) = std(epz_p(1:i));
+    
+    meanxp_p(i) = mean(epx_p(1:i));
+    meanyp_p(i) = mean(epy_p(1:i));
+    meanzp_p(i) = mean(epz_p(1:i));
+end
+
+for i=1:minLr
+    epx_r(i) = xpFix_r.Data(i) - timePostN_r.Data(i);
+    epy_r(i) = ypFix_r.Data(i) - timePostE_r.Data(i);
+    epz_r(i) = zpFix_r.Data(i) - timePostD_r.Data(i);
+    
+    stdxp_r(i) = std(epx_r(1:i));
+    stdyp_r(i) = std(epy_r(1:i));
+    stdzp_r(i) = std(epz_r(1:i));
+    
+    meanxp_r(i) = mean(epx_r(1:i));
+    meanyp_r(i) = mean(epy_r(1:i));
+    meanzp_r(i) = mean(epz_r(1:i));
 end
 
 %% Plot
@@ -638,6 +698,124 @@ if PIXI
     title('The mean difference in Down velocity estimation');
     ylabel('Mean difference [m/s]');
     xlabel('Time [s]');
+    
+    %% Plot were the post proseccing is used
+    figure(23)
+    subplot(3,1,1)
+    plot(xpFix_r.Time - towTimeStart,epx_r);
+    grid on;
+    title('Difference between North from Rtklib and North from Post Processing');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,2)
+    plot(ypFix_r.Time - towTimeStart,epy_r);
+    grid on;
+    title('Difference between East from Rtklib and East from Post Processing');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,3)
+    plot(zpFix_r.Time - towTimeStart,epz_r);
+    grid on;
+    title('Difference between Down from Rtklib and Down from Post Processing');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    figure(24)
+    subplot(3,1,1);
+    plot(xpFix_r.Time-towTimeStart,stdxp_r);
+    grid on;
+    title('Standard deviation Rtklib and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,2);
+    plot(ypFix_r.Time-towTimeStart,stdyp_r);
+    grid on;
+    title('Standard deviation Rtklib and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,3);
+    plot(zpFix_r.Time-towTimeStart,stdzp_r);
+    grid on;
+    title('Standard deviation Rtklib and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    figure(25)
+    subplot(3,1,1);
+    plot(xpFix_r.Time-towTimeStart,meanxp_r);
+    grid on;
+    title('Mean value Rtklib and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,2);
+    plot(ypFix_r.Time-towTimeStart,meanyp_r);
+    grid on;
+    title('Mean value Rtklib and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,3);
+    plot(zpFix_r.Time-towTimeStart,meanzp_r);
+    grid on;
+    title('Mean value Rtklib and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    
+    figure(26);
+    subplot(3,1,1)
+    plot(xpFix_p.Time - towTimeStart,epx_p);
+    grid on;
+    title('Difference between North from Piksi and North from Post Processing');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,2)
+    plot(ypFix_p.Time - towTimeStart,epy_p);
+    grid on;
+    title('Difference between East from Piksi and East from Post Processing');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,3)
+    plot(zpFix_p.Time - towTimeStart,epz_p);
+    grid on;
+    title('Difference between Down from Piksi and Down from Post Processing');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    figure(27)
+    subplot(3,1,1);
+    plot(xpFix_p.Time-towTimeStart,stdxp_p);
+    grid on;
+    title('Standard deviation Piksi and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,2);
+    plot(ypFix_p.Time-towTimeStart,stdyp_p);
+    grid on;
+    title('Standard deviation Piksi and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,3);
+    plot(zpFix_p.Time-towTimeStart,stdzp_p);
+    grid on;
+    title('Standard deviation Piksi and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    figure(28)
+    subplot(3,1,1);
+    plot(xpFix_p.Time-towTimeStart,meanxp_p);
+    grid on;
+    title('Mean value Piksi and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,2);
+    plot(ypFix_p.Time-towTimeStart,meanyp_p);
+    grid on;
+    title('Mean value Piksi and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    subplot(3,1,3);
+    plot(zpFix_p.Time-towTimeStart,meanzp_p);
+    grid on;
+    title('Mean value Piksi and Post');
+    ylabel('Distance [m]');
+    xlabel('Time [s]');
+    
 else
     figure(1);
     plot(e_r,n_r,'r');
