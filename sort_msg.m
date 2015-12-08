@@ -2,7 +2,7 @@
 %rtklib 23
 close all;
 clear;
-load('log_folder/neptusLog/Vandring6/Data.mat')
+load('log_folder/neptusLog/Vandring7/Data.mat')
 PostPro = load('log_folder/PostPro/rtklib_ubxstream_x8_log201512061145.pos');
 PIXI = 1;
 len = length(RtkFix.src_ent);
@@ -554,7 +554,7 @@ if PIXI
     ylabel('Standard deviation');
     
     
-    %% Sync plot
+    
     figure(13);
     subplot(2,1,1);
     plot(timestampFix_p(1:fixPixi-1)-timeStart,nFix_p(1:fixPixi-1),'xb');
@@ -578,7 +578,7 @@ if PIXI
     
     
     
-    
+    %% sync plot
     figure(14);
     plot(yFix_p.Data(:),xFix_p.Data(:),'xb');
     hold on;
@@ -603,14 +603,11 @@ if PIXI
 
     figure(15);
     subplot(2,1,1);
-    plot(zFix_p.Time-timeStart,zFix_p.Data(:),'xb');
-%     plot(dft_p-timeStart,df_p,'b');
-    % grid on;
-    % title('Down Piksi'); 
-    % xlabel('Time [s]'); ylabel('Down [m]');
-
+%     plot(zFix_p.Time-timeStart,zFix_p.Data(:),'xb');
+    plot(zpFix_p.Time-towTimeStart,zpFix_p.Data(:),'xb');
     hold on;
-    plot(zFix_r.Time-timeStart,zFix_r.Data(:),'xr');
+%     plot(zFix_r.Time-timeStart,zFix_r.Data(:),'xr');
+    plot(timePostD_p.Time -towTimeStart,timePostD_p.Data(:),'xr');
     grid on;
     title('Down Rtklib');
     legend('Pixi','Rtklib')
@@ -812,7 +809,7 @@ if PIXI
     subplot(3,1,3);
     plot(zpFix_p.Time-towTimeStart,meanzp_p);
     grid on;
-    title('Mean value Piksi and Post');
+    title('Commulated mean value Piksi and Post');
     ylabel('Distance [m]');
     xlabel('Time [s]');
     
