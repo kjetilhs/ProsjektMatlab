@@ -201,18 +201,18 @@ for i=1:tStop-tStart
        qualityp(i) = 0;
    end
 end
-xyStart = 600;
-xyStop = 1000;
+xyStart = 1;
+xyStop = 200;
 %% Plots
-figure(1);
-    plot(eFix(xyStart:xyStop),nFix(xyStart:xyStop),'xb');
-    hold on;
+% figure(1);
+%     plot(eFix(xyStart:xyStop),nFix(xyStart:xyStop),'xb');
+%     hold on;
 %     plot(eFloat(xyStart:xyStop),nFloat(xyStart:xyStop),'xr');
 %     plot(eNone,nNone,'xg');
-    grid on;
-    title('XY'); 
-    xlabel('East [m]'); ylabel('North [m]');
-    legend('Fix','Float','None');
+%     grid on;
+%     title('XY'); 
+%     xlabel('East [m]'); ylabel('North [m]');
+%     legend('Fix','Float','None');
 
     
     figure(2);
@@ -224,7 +224,7 @@ figure(1);
     plot(tp,dp,'--c');
     grid on;
     title('Down');
-    legend('Fix','Float','None','post processed rtklib')
+    legend('Fix','Float','None','Post processed')
     xlabel('Time [s]');
     ylabel('Down [m]');
 
@@ -234,19 +234,20 @@ figure(1);
     plot(tp,qualityp,'r');
 %     plot(PostTime-PostTime(1),PostType,'--g');
     grid on;
-    title('Ambiguity solution')
+    title('Integer ambiguity solution: Fix = 3, Float = 2, None = 0')
     ylabel('Solution type')
     xlabel('Time [s]');
-    legend('Real time','post processed rtklib');
+    legend('Real time','Post processed');
     ylim([0 5]);
 
     figure(3)
     subplot(3,1,1)
     plot(tFix,vnFix,'xb');
     hold on;
+    plot(tFloat,vnFloat,'xr');
+    plot(tNone,vnNone,'xg');
     grid on;
-%     plot(timestampFix_r(1:fixRTK-1)-timeStart,vFix_n_r(1:fixRTK-1),'xr')
-    legend('Fix','Rtklib');
+    legend('Fix','Float','None');
     title('Velocity in North direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
@@ -254,11 +255,10 @@ figure(1);
     subplot(3,1,2)
     plot(tFix,veFix,'xb');
     hold on;
+    plot(tFloat,veFloat,'xr');
+    plot(tNone,veNone,'xg');
     grid on;
-%     plot(timestampFix_r(1:fixRTK-1)-timeStart,v_e_r(1:fixRTK-1),'xr')
-    % plot(timestamp_p(1:TimeEnd)-timeStart,ed_p(1:TimeEnd),'g');
-    % plot(timestamp_r(1:TimeEnd)-timeStart,ed_r(1:TimeEnd),'c')
-    legend('Fix','Rtklib');
+    legend('Fix','Float','None');
     title('Velocity in East direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
@@ -266,9 +266,10 @@ figure(1);
     subplot(3,1,3)
     plot(tFix,vdFix,'xb');
     hold on;
+    plot(tFloat,vdFloat,'xr');
+    plot(tNone,vdNone,'xg');
     grid on;
-%     plot(timestampFix_r(1:fixRTK-1)-timeStart,vFix_d_r(1:fixRTK-1),'xr')
-    legend('Fix','Rtklib');
+    legend('Fix','Float','None');
     title('Velocity in Down direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
@@ -300,6 +301,9 @@ figure(6)
 subplot(2,1,1);
 plot(tp,errord);
 grid on;
+title('Error in Down position');
+xlabel('Time [s]');
+ylabel('Error [m]');
 ylim([-2 2]);
 subplot(2,1,2)
 plot(t,quality,'b');
@@ -311,3 +315,18 @@ ylabel('Solution type')
 xlabel('Time [s]');
 legend('Real time','post processed rtklib');
 ylim([0 5]);
+figure(7)
+subplot(2,1,1);
+plot(tp,errord);
+grid on;
+title('Error in North position');
+xlabel('Time [s]');
+ylabel('Error [m]');
+ylim([-2 2]);
+subplot(2,1,2);
+plot(tp,errord);
+grid on;
+title('Error in East position');
+xlabel('Time [s]');
+ylabel('Error [s]');
+ylim([-2 2]);
