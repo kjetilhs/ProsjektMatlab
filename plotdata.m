@@ -226,7 +226,7 @@ xyStop = 200;
     title('Down');
     legend('Fix','Float','None','Post processed')
     xlabel('Time [s]');
-    ylabel('Down [m]');
+    ylabel('Meter [m]');
 
     subplot(2,1,2)
     plot(t,quality,'b');
@@ -282,7 +282,7 @@ xyStop = 200;
     title('Visable satellites')
     xlabel('Time [s]');
     ylabel('Number of satellites');
-    legend('Rtklib');
+%     legend('Rtklib');
     ylim([4 12])
 %     
 %     %% Histogram
@@ -303,17 +303,17 @@ plot(tp,errord);
 grid on;
 title('Error in Down position');
 xlabel('Time [s]');
-ylabel('Error [m]');
+ylabel('Meter [m]');
 ylim([-2 2]);
 subplot(2,1,2)
 plot(t,quality,'b');
 hold on;
 plot(tp,qualityp,'r');
 grid on;
-title('Ambiguity solution')
+title('Integer ambiguity solution: Fix = 3, Float = 2,Obs = 1, None = 0')
 ylabel('Solution type')
 xlabel('Time [s]');
-legend('Real time','post processed rtklib');
+legend('Real time','Post processed');
 ylim([0 5]);
 figure(7)
 subplot(2,1,1);
@@ -321,12 +321,36 @@ plot(tp,errord);
 grid on;
 title('Error in North position');
 xlabel('Time [s]');
-ylabel('Error [m]');
+ylabel('Meter [m]');
 ylim([-2 2]);
 subplot(2,1,2);
 plot(tp,errord);
 grid on;
 title('Error in East position');
 xlabel('Time [s]');
-ylabel('Error [s]');
+ylabel('Meter [m]');
 ylim([-2 2]);
+
+figure(8);
+subplot(2,1,1);
+plot(tFix,nFix,'xb');
+hold on;
+plot(tFloat,nFloat,'xr');
+plot(tNone,nNone,'xg');
+plot(tp,np,'--c');
+grid on;
+title('North');
+legend('Fix','Float','None','Post processed')
+xlabel('Time [s]');
+ylabel('Meter [m]');
+subplot(2,1,2);
+plot(tFix,eFix,'xb');
+hold on;
+plot(tFloat,eFloat,'xr');
+plot(tNone,eNone,'xg');
+plot(tp,ep,'--c');
+grid on;
+title('East');
+legend('Fix','Float','None','Post processed')
+xlabel('Time [s]');
+ylabel('Meter [m]');

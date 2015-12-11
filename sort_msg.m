@@ -411,7 +411,7 @@ if PIXI
     grid on;
     title('North East position'); 
     xlabel('East [m]'); ylabel('North [m]');
-    legend('Pixi','RtkLib','post processed rtklib');
+    legend('Piksi','RtkLib','Post processed');
 
     % figure(2);
     % plot3(e_p,n_p,d_p);
@@ -434,7 +434,7 @@ if PIXI
     plot(PostTime-PostTime(1),PostD,'--g');
     grid on;
     title('Down position');
-    legend('Piksi','Rtklib','post processed rtklib')
+    legend('Piksi','Rtklib','Post processed')
     xlabel('Time [s]');
     ylabel('Down [m]');
 
@@ -444,7 +444,7 @@ if PIXI
     plot(tow_r-tow_r(1),type_r,'r');
     plot(PostTime-PostTime(1),PostType,'--g');
     grid on;
-    title('Integer ambiguity solution: Fix = 3, Float = 2, None = 0')
+    title('Integer ambiguity solution: Fix = 3, Float = 2,Obs = 1, None = 0')
     ylabel('Solution type')
     xlabel('Time [s]');
     legend('Piksi','Rtklib','post processed rtklib');
