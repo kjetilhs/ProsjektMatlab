@@ -428,7 +428,7 @@ if PIXI
 
     figure(2);
     subplot(2,1,1);
-    plot(towFix_p-towFix_p(1),dFix_p,'b');
+    plot(towFix_p-towFix_p(1),dFix_p,'xb');
     hold on;
     plot(towFix_r-towFix_r(1),dFix_r,'xr');
     plot(PostTime-PostTime(1),PostD,'--g');
@@ -482,6 +482,7 @@ if PIXI
     title('Velocity in Down direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
+    ylim([-5 5]);
 
     figure(4)
     plot(timestamp_p(1:TimeEndp)-timeStart,satellites_p(1:TimeEndp),'b');
