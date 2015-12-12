@@ -315,18 +315,26 @@ ylabel('Solution type')
 xlabel('Time [s]');
 legend('Real time','Post processed');
 ylim([0 5]);
+
 figure(7)
-subplot(2,1,1);
+subplot(3,1,1);
 plot(tp,errord);
 grid on;
 title('Error in North position');
 xlabel('Time [s]');
 ylabel('Meter [m]');
 ylim([-2 2]);
-subplot(2,1,2);
+subplot(3,1,2);
 plot(tp,errord);
 grid on;
 title('Error in East position');
+xlabel('Time [s]');
+ylabel('Meter [m]');
+ylim([-2 2]);
+subplot(3,1,3);
+plot(tp,errord);
+grid on;
+title('Error in Down position');
 xlabel('Time [s]');
 ylabel('Meter [m]');
 ylim([-2 2]);
