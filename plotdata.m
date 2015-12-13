@@ -201,17 +201,19 @@ for i=1:tStop-tStart
        qualityp(i) = 0;
    end
 end
-xyStart = 1;
-xyStop = 200;
+xyStart = 2500;
+xyStop = 3000;
 %% Plots
-% figure(1);
-%     plot(eFix(xyStart:xyStop),nFix(xyStart:xyStop),'xb');
+figure(1);
+    plot3(e(xyStart:xyStop),n(xyStart:xyStop),d(xyStart:xyStop),'xb');
 %     hold on;
 %     plot(eFloat(xyStart:xyStop),nFloat(xyStart:xyStop),'xr');
 %     plot(eNone,nNone,'xg');
-%     grid on;
-%     title('XY'); 
-%     xlabel('East [m]'); ylabel('North [m]');
+    grid on;
+    title('XY'); 
+    xlabel('East [m]');
+    ylabel('North [m]');
+    zlabel('Down [m]');
 %     legend('Fix','Float','None');
 
     
