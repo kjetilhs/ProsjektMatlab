@@ -813,7 +813,16 @@ if PIXI
 %     title('Cumulative mean value Piksi and Post');
 %     ylabel('Distance [m]');
 %     xlabel('Time [s]');
-    
+    figure(29);
+    plot(towFix_p-towFix_p(1),dFix_p,'xb');
+    hold on;
+    plot(towFix_r-towFix_r(1),dFix_r,'xr');
+    plot(PostTime-PostTime(1),PostD,'--g');
+    grid on;
+    title('Down position');
+    legend('Piksi','Rtklib','Post processed')
+    xlabel('Time [s]');
+    ylabel('Down [m]');  
 else
     figure(1);
     plot(e_r,n_r,'r');
