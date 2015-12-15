@@ -11,7 +11,7 @@ tStop = 4958;
 t = flightdata(tStart:tStop,2)-flightdata(tStart,2);
 e = flightdata(tStart:tStop,3);
 n = flightdata(tStart:tStop,4);
-d = -flightdata(tStart:tStop,5);
+altitude = flightdata(tStart:tStop,5);
 quality = flightdata(tStart:tStop,6);
 num_sat = flightdata(tStart:tStop,7);
 sdx = flightdata(tStart:tStop,8);
@@ -24,12 +24,12 @@ age = flightdata(tStart:tStop,14);
 ratio = flightdata(tStart:tStop,15);
 ve = flightdata(tStart:tStop,16);
 vn = flightdata(tStart:tStop,17);
-vd = -flightdata(tStart:tStop,18);
+vd = flightdata(tStart:tStop,18);
 
 tp = PostPro(tStart:tStop,2)-PostPro(tStart,2);
 ep = PostPro(tStart:tStop,3);
 np = PostPro(tStart:tStop,4);
-dp = -PostPro(tStart:tStop,5);
+altitudep = PostPro(tStart:tStop,5);
 qualityp = PostPro(tStart:tStop,6);
 num_satp = PostPro(tStart:tStop,7);
 sdxp = PostPro(tStart:tStop,8);
@@ -59,8 +59,8 @@ for i=1:length(t)-1
         stop = i;
     end
 end
-errord = d-dp;
-errore = e-dp;
+errord = altitude-altitudep;
+errore = e-altitudep;
 errorn = n-np;
 %% Retrive FIX,FLOAT and NONE solution
 numFix = flightdata(tStart:tStop,6) == 1;
@@ -138,7 +138,7 @@ for i=1:tStop-tStart
        tFix(fix) = t(i);
        eFix(fix) = e(i);
        nFix(fix) = n(i);
-       dFix(fix) = d(i);
+       dFix(fix) = altitude(i);
        num_satFix(fix) = num_sat(i);
        sdxFix(fix) = sdx(i);
        sdyFix(fix) = sdy(i);
@@ -158,7 +158,7 @@ for i=1:tStop-tStart
        tFloat(float) = t(i);
        eFloat(float) = e(i);
        nFloat(float) = n(i);
-       dFloat(float) = d(i);
+       dFloat(float) = altitude(i);
        num_satFloat(float) = num_sat(i);
        sdxFloat(float) = sdx(i);
        sdyFloat(float) = sdy(i);
@@ -178,7 +178,7 @@ for i=1:tStop-tStart
        tNone(none) = t(i);
        eNone(none) = e(i);
        nNone(none) = n(i);
-       dNone(none) = d(i);
+       dNone(none) = altitude(i);
        num_satNone(none) = num_sat(i);
        sdxNone(none) = sdx(i);
        sdyNone(none) = sdy(i);
@@ -201,19 +201,26 @@ for i=1:tStop-tStart
        qualityp(i) = 0;
    end
 end
-xyStart = 2500;
+xyStart = 2700;
 xyStop = 3000;
 %% Plots
 figure(1);
-    plot3(e(xyStart:xyStop),n(xyStart:xyStop),d(xyStart:xyStop),'xb');
+    subplot(2,1,1);
+    plot(e(xyStart:xyStop),altitude(xyStart:xyStop));
 %     hold on;
 %     plot(eFloat(xyStart:xyStop),nFloat(xyStart:xyStop),'xr');
 %     plot(eNone,nNone,'xg');
     grid on;
-    title('XY'); 
     xlabel('East [m]');
-    ylabel('North [m]');
-    zlabel('Down [m]');
+    ylabel('Altitude [m]');
+    subplot(2,1,2);
+    plot(n(xyStart:xyStop),altitude(xyStart:xyStop));
+%     hold on;
+%     plot(eFloat(xyStart:xyStop),nFloat(xyStart:xyStop),'xr');
+%     plot(eNone,nNone,'xg');
+    grid on;
+    xlabel('North [m]');
+    ylabel('Altitude [m]');
 %     legend('Fix','Float','None');
 
     
@@ -223,9 +230,9 @@ figure(1);
     hold on;
     plot(tFloat,dFloat,'xr');
     plot(tNone,dNone,'xg');
-    plot(tp,dp,'--c');
+    plot(tp,altitudep,'--c');
     grid on;
-    title('Down');
+    title('Altitude');
     legend('Fix','Float','None','Post processed')
     xlabel('Time [s]');
     ylabel('Meter [m]');
@@ -244,35 +251,35 @@ figure(1);
 
     figure(3)
     subplot(3,1,1)
-    plot(tFix,vnFix,'xb');
-    hold on;
-    plot(tFloat,vnFloat,'xr');
-    plot(tNone,vnNone,'xg');
+    plot(t(xyStart:xyStop),vn(xyStart:xyStop),'b');
+%     hold on;
+%     plot(tFloat,vnFloat,'xr');
+%     plot(tNone,vnNone,'xg');
     grid on;
-    legend('Fix','Float','None');
+%     legend('Fix','Float','None');
     title('Velocity in North direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
 
     subplot(3,1,2)
-    plot(tFix,veFix,'xb');
-    hold on;
-    plot(tFloat,veFloat,'xr');
-    plot(tNone,veNone,'xg');
+    plot(t(xyStart:xyStop),ve(xyStart:xyStop),'b');
+%     hold on;
+%     plot(tFloat,veFloat,'xr');
+%     plot(tNone,veNone,'xg');
     grid on;
-    legend('Fix','Float','None');
+%     legend('Fix','Float','None');
     title('Velocity in East direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
 
     subplot(3,1,3)
-    plot(tFix,vdFix,'xb');
-    hold on;
-    plot(tFloat,vdFloat,'xr');
-    plot(tNone,vdNone,'xg');
+    plot(t(xyStart:xyStop),vd(xyStart:xyStop),'b');
+%     hold on;
+%     plot(tFloat,vdFloat,'xr');
+%     plot(tNone,vdNone,'xg');
     grid on;
-    legend('Fix','Float','None');
-    title('Velocity in Down direction');
+%     legend('Fix','Float','None');
+    title('Altitude Velocity');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
 
