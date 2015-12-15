@@ -404,9 +404,9 @@ TimeEndr = length(timestamp_r);
 TimeEndp = length(timestamp_p);
 if PIXI
     figure(1);
-    plot(eFix_p,nFix_p,'xb');
+    plot(eFix_p,nFix_p,'b');
     hold on;
-    plot(eFix_r,nFix_r,'xr');
+    plot(eFix_r,nFix_r,'r');
     plot(PostE,PostN,'--g');
     grid on;
     title('North East position'); 
@@ -428,9 +428,9 @@ if PIXI
 
     figure(2);
     subplot(2,1,1);
-    plot(towFix_p-towFix_p(1),dFix_p,'xb');
+    plot(towFix_p-towFix_p(1),dFix_p,'b');
     hold on;
-    plot(towFix_r-towFix_r(1),dFix_r,'xr');
+    plot(towFix_r-towFix_r(1),dFix_r,'r');
     plot(PostTime-PostTime(1),PostD,'--g');
     grid on;
     title('Down position');
@@ -558,9 +558,9 @@ if PIXI
     
     figure(13);
     subplot(2,1,1);
-    plot(towFix_p-towFix_p(1),nFix_p,'xb');
+    plot(towFix_p-towFix_p(1),nFix_p,'b');
     hold on;
-    plot(towFix_r-towFix_r(1),nFix_r,'xr');
+    plot(towFix_r-towFix_r(1),nFix_r,'r');
     grid on;
     title('North Rtklib');
     legend('Piksi','Rtklib')
@@ -568,9 +568,9 @@ if PIXI
     ylabel('Down [m]');
 
     subplot(2,1,2)
-    plot(towFix_p-towFix_p(1),eFix_p,'xb');
+    plot(towFix_p-towFix_p(1),eFix_p,'b');
     hold on;
-    plot(towFix_r-towFix_r(1),eFix_r,'xr');
+    plot(towFix_r-towFix_r(1),eFix_r,'r');
     grid on;
     title('East Rtklib');
     legend('Piksi','Rtklib')
@@ -814,9 +814,9 @@ if PIXI
 %     ylabel('Distance [m]');
 %     xlabel('Time [s]');
     figure(29);
-    plot(towFix_p-towFix_p(1),dFix_p,'xb');
+    plot(towFix_p-towFix_p(1),dFix_p,'b');
     hold on;
-    plot(towFix_r-towFix_r(1),dFix_r,'xr');
+    plot(towFix_r-towFix_r(1),dFix_r,'r');
     plot(PostTime-PostTime(1),PostD,'--g');
     grid on;
     title('Down position');
