@@ -2,7 +2,7 @@
 %rtklib 23
 close all;
 clear;
-load('log_folder/neptusLog/Vandring6/Data.mat')
+load('log_folder/neptusLog/Vandring7/Data.mat')
 PostPro = load('log_folder/PostPro/rtklib_ubxstream_x8_log201512061145.pos');
 PIXI = 1;
 len = length(RtkFix.src_ent);
@@ -404,14 +404,14 @@ TimeEndr = length(timestamp_r);
 TimeEndp = length(timestamp_p);
 if PIXI
     figure(1);
-    plot(eFix_p,nFix_p,'b');
+    plot(eFix_p,nFix_p,'xb');
     hold on;
-    plot(eFix_r,nFix_r,'r');
+    plot(eFix_r,nFix_r,'xr');
     plot(PostE,PostN,'--g');
     grid on;
     title('North East position'); 
     xlabel('East [m]'); ylabel('North [m]');
-    legend('Piksi','RtkLib','Post processed');
+    legend('Piksi','RTKLIB','Post processed');
 
     % figure(2);
     % plot3(e_p,n_p,d_p);
@@ -428,13 +428,13 @@ if PIXI
 
     figure(2);
     subplot(2,1,1);
-    plot(towFix_p-towFix_p(1),dFix_p,'b');
+    plot(towFix_p-towFix_p(1),dFix_p,'xb');
     hold on;
-    plot(towFix_r-towFix_r(1),dFix_r,'r');
+    plot(towFix_r-towFix_r(1),dFix_r,'xr');
     plot(PostTime-PostTime(1),PostD,'--g');
     grid on;
     title('Down position');
-    legend('Piksi','Rtklib','Post processed')
+    legend('Piksi','RTKLIB','Post processed')
     xlabel('Time [s]');
     ylabel('Down [m]');
 
@@ -447,7 +447,7 @@ if PIXI
     title('Integer ambiguity solution: Fix = 3, Float = 2,Obs = 1, None = 0')
     ylabel('Solution type')
     xlabel('Time [s]');
-    legend('Piksi','Rtklib','post processed rtklib');
+    legend('Piksi','RTKLIB','Post processed');
     ylim([0 5]);
 
     figure(3)
@@ -456,7 +456,7 @@ if PIXI
     hold on;
     grid on;
     plot(towFix_r-towFix_r(1),vFix_n_r,'--r')
-    legend('Piksi','Rtklib');
+    legend('Piksi','RTKLIB');
     title('Velocity in North direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
@@ -468,7 +468,7 @@ if PIXI
     plot(towFix_r-towFix_r(1),vFix_e_r,'--r')
     % plot(timestamp_p(1:TimeEnd)-timeStart,ed_p(1:TimeEnd),'g');
     % plot(timestamp_r(1:TimeEnd)-timeStart,ed_r(1:TimeEnd),'c')
-    legend('Piksi','Rtklib');
+    legend('Piksi','RTKLIB');
     title('Velocity in East direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
@@ -478,7 +478,7 @@ if PIXI
     hold on;
     grid on;
     plot(timestampFix_r(1:fixRTK-1)-timeStart,vFix_d_r,'--r')
-    legend('Piksi','Rtklib');
+    legend('Piksi','RTKLIB');
     title('Velocity in Down direction');
     ylabel('Velocity [m/s]')
     xlabel('Time [s]');
@@ -492,7 +492,7 @@ if PIXI
     title('Visable satellites')
     xlabel('Time [s]');
     ylabel('Number of satellites');
-    legend('Piksi','Rtklib');
+    legend('Piksi','RTKLIB');
     ylim([4 12])
     
     %% Histogram
@@ -556,26 +556,26 @@ if PIXI
     
     
     
-    figure(13);
-    subplot(2,1,1);
-    plot(towFix_p-towFix_p(1),nFix_p,'b');
-    hold on;
-    plot(towFix_r-towFix_r(1),nFix_r,'r');
-    grid on;
-    title('North Rtklib');
-    legend('Piksi','Rtklib')
-    xlabel('Time [s]');
-    ylabel('Down [m]');
-
-    subplot(2,1,2)
-    plot(towFix_p-towFix_p(1),eFix_p,'b');
-    hold on;
-    plot(towFix_r-towFix_r(1),eFix_r,'r');
-    grid on;
-    title('East Rtklib');
-    legend('Piksi','Rtklib')
-    xlabel('Time [s]');
-    ylabel('Down [m]');
+%     figure(13);
+%     subplot(2,1,1);
+%     plot(towFix_p-towFix_p(1),nFix_p,'b');
+%     hold on;
+%     plot(towFix_r-towFix_r(1),nFix_r,'r');
+%     grid on;
+%     title('North Rtklib');
+%     legend('Piksi','Rtklib')
+%     xlabel('Time [s]');
+%     ylabel('Down [m]');
+% 
+%     subplot(2,1,2)
+%     plot(towFix_p-towFix_p(1),eFix_p,'b');
+%     hold on;
+%     plot(towFix_r-towFix_r(1),eFix_r,'r');
+%     grid on;
+%     title('East Rtklib');
+%     legend('Piksi','Rtklib')
+%     xlabel('Time [s]');
+%     ylabel('Down [m]');
     
     
     
@@ -702,39 +702,39 @@ if PIXI
     subplot(3,1,1)
     plot(xpFix_r.Time - towTimeStart,epx_r);
     grid on;
-    title('Error in North solution Rtklib');
-    ylabel('Error [m]');
+    title('North error, RTKLIB');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     subplot(3,1,2)
     plot(ypFix_r.Time - towTimeStart,epy_r);
     grid on;
-    title('Error in East solution Rtklib');
-    ylabel('Error [m]');
+    title('East error, RTKLIB');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     subplot(3,1,3)
     plot(zpFix_r.Time - towTimeStart,epz_r);
     grid on;
-    title('Error in Down solution Rtklib');
-    ylabel('Error [m]');
+    title('Down error, RTKLIB');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     figure(24)
     subplot(3,1,1);
     plot(xpFix_r.Time-towTimeStart,stdxp_r);
     grid on;
-    title('Standard deviation in North position, Rtklib');
-    ylabel('Deviation [m]');
+    title('Cumulative standard deviation in North position, RTKLIB');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     subplot(3,1,2);
     plot(ypFix_r.Time-towTimeStart,stdyp_r);
     grid on;
-    title('Standard deviation in East position, Rtklib');
-    ylabel('Deviation [m]');
+    title('Cumulative standard deviation in East position, RTKLIB');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     subplot(3,1,3);
     plot(zpFix_r.Time-towTimeStart,stdzp_r);
     grid on;
-    title('Standard deviation in Down position, Rtklib');
-    ylabel('Deviation [m]');
+    title('Cumulative standard deviation in Down position, RTKLIB');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
 %     figure(25)
 %     subplot(3,1,1);
@@ -760,39 +760,39 @@ if PIXI
     subplot(3,1,1)
     plot(xpFix_p.Time - towTimeStart,epx_p);
     grid on;
-    title('Error in North solution Piksi');
-    ylabel('Error [m]');
+    title('North error, Piksi');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     subplot(3,1,2)
     plot(ypFix_p.Time - towTimeStart,epy_p);
     grid on;
-    title('Error in East solution Piksi');
-    ylabel('Error [m]');
+    title('East error, Piksi');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     subplot(3,1,3)
     plot(zpFix_p.Time - towTimeStart,epz_p);
     grid on;
-    title('Error in Down solution Piksi');
-    ylabel('Error [m]');
+    title('Down error, Piksi');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     figure(27)
     subplot(3,1,1);
     plot(xpFix_p.Time-towTimeStart,stdxp_p);
     grid on;
     title('Cumulative standard deviation in North position, Piksi');
-    ylabel('Deviation [m]');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     subplot(3,1,2);
     plot(ypFix_p.Time-towTimeStart,stdyp_p);
     grid on;
     title('Cumulative standard deviation in East position, Piksi');
-    ylabel('Deviation [m]');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
     subplot(3,1,3);
     plot(zpFix_p.Time-towTimeStart,stdzp_p);
     grid on;
     title('Cumulative standard deviation in Down position, Piksi');
-    ylabel('Deviation [m]');
+    ylabel('Distance [m]');
     xlabel('Time [s]');
 %     figure(28)
 %     subplot(3,1,1);
@@ -820,9 +820,9 @@ if PIXI
     plot(PostTime-PostTime(1),PostD,'--g');
     grid on;
     title('Down position');
-    legend('Piksi','Rtklib','Post processed')
+    legend('Piksi','RTKLIB','Post processed')
     xlabel('Time [s]');
-    ylabel('Down [m]');  
+    ylabel('Position [m]');  
 else
     figure(1);
     plot(e_r,n_r,'r');

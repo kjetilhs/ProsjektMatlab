@@ -232,10 +232,10 @@ figure(1);
     plot(tNone,dNone,'xg');
     plot(tp,altitudep,'--c');
     grid on;
-    title('Altitude');
+    title('Altitude of the UAV');
     legend('Fix','Float','None','Post processed')
     xlabel('Time [s]');
-    ylabel('Meter [m]');
+    ylabel('Altitude [m]');
 
     subplot(2,1,2)
     plot(t,quality,'b');
@@ -312,7 +312,7 @@ plot(tp,errord);
 grid on;
 title('Error in Down position');
 xlabel('Time [s]');
-ylabel('Meter [m]');
+ylabel('Distance [m]');
 ylim([-2 2]);
 subplot(2,1,2)
 plot(t,quality,'b');
@@ -327,25 +327,25 @@ ylim([0 5]);
 
 figure(7)
 subplot(3,1,1);
-plot(tp,errord);
+plot(tp(xyStart:xyStop),errord(xyStart:xyStop));
 grid on;
 title('Error in North position');
 xlabel('Time [s]');
-ylabel('Meter [m]');
+ylabel('Distance [m]');
 ylim([-2 2]);
 subplot(3,1,2);
-plot(tp,errord);
+plot(tp(xyStart:xyStop),errord(xyStart:xyStop));
 grid on;
 title('Error in East position');
 xlabel('Time [s]');
-ylabel('Meter [m]');
+ylabel('Distance [m]');
 ylim([-2 2]);
 subplot(3,1,3);
-plot(tp,errord);
+plot(tp(xyStart:xyStop),errord(xyStart:xyStop));
 grid on;
 title('Error in Down position');
 xlabel('Time [s]');
-ylabel('Meter [m]');
+ylabel('Distance [m]');
 ylim([-2 2]);
 
 figure(8);
@@ -359,7 +359,7 @@ grid on;
 title('North');
 legend('Fix','Float','None','Post processed')
 xlabel('Time [s]');
-ylabel('Meter [m]');
+ylabel('Position [m]');
 subplot(2,1,2);
 plot(tFix,eFix,'xb');
 hold on;
@@ -370,4 +370,4 @@ grid on;
 title('East');
 legend('Fix','Float','None','Post processed')
 xlabel('Time [s]');
-ylabel('Meter [m]');
+ylabel('Position [m]');
