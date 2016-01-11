@@ -2,7 +2,7 @@
 %rtklib 23
 close all;
 clear;
-load('log_folder/neptusLog/Vandring7/Data.mat')
+load('log_folder/neptusLog/Vandring6/Data.mat')
 PostPro = load('log_folder/PostPro/rtklib_ubxstream_x8_log201512061145.pos');
 PIXI = 1;
 len = length(RtkFix.src_ent);
